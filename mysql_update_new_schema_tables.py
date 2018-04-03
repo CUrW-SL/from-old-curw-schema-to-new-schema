@@ -152,7 +152,7 @@ def export_station_descriptor_data():
     sql = "SELECT `sd_id`, `station_name`, `parameter`, `source`, `lat`, `lon` FROM `station_descriptor`"
     df_station_descriptor = pd.read_sql_query(sql=sql, con=new_curw_db_conn, index_col='sd_id')
     df_station_descriptor.to_csv('station_descriptor.csv', header=True, index=True)
-    print("Exported station_descriptor of size: %d rows", len(df_station_descriptor.index))
+    print("Exported station_descriptor of size: %d rows" % len(df_station_descriptor.index))
 
 def import_data_from_out_csv():
     """

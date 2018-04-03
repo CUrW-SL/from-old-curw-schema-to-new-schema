@@ -1,9 +1,15 @@
+import argparse
 import csv
+from datetime import datetime
 import pymysql
 
 from mysql_config import OLD_DB_CONFIG, NEW_DB_CONFIG
-from mysql_config import START_DATE_TIME
 
+USAGE = \
+    """
+    '-d' or '--date'  date-time from which onwards should data be pushed. 
+    ex: '2018-01-01 00:00:00'
+    """
 
 def create_db_coonections():
     # create database connections.
@@ -33,6 +39,26 @@ old_curw_timseries_data_query = "SELECT `time`, `value` FROM `data` WHERE `id`=%
 new_curw_timeseries_query = "INSERT INTO `timeseries` (`sd_id`, `date_time`, `value`, `type`, `sim_tag`) " \
                                  "VALUES (%s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE `value`=VALUES(`value`);"
 
+
+# Parse the commandline arguments.
+parser = argparse.ArgumentParser()
+parser.add_argument('-d', '--date',
+                        help='date-time from which onwards should data be pushed, ex: 2018-01-01 00:00:00')
+args = parser.parse_args()
+
+# get the date and check the given date-time is of correct format.
+if args.date:
+    start_date_time = args.date
+    try:
+        datetime.strptime(start_date_time, '%Y-%m-%d %H:%M:%S')
+    except Exception:
+        print("Invalid date-time format.\nUsage: %s" % USAGE)
+        exit(1)
+else:
+    print("No start date-time is given.\nUsage: %s" % USAGE)
+    exit(1)
+
+
 with open('station_descriptor.csv') as csvfile:
     # Read the scv file. will get an array of arrays.
     read_csv = csv.reader(csvfile, delimiter=',')
@@ -59,7 +85,7 @@ for data in data_matrix:
         type = ts[1]
         sim_tag = ts[2]
         with old_db_conn.cursor() as ol_db_cursor:
-            ol_db_cursor.execute(old_curw_timseries_data_query, (ts_id, START_DATE_TIME))
+            ol_db_cursor.execute(old_curw_timseries_data_query, (ts_id, start_date_time))
             timeseries = ol_db_cursor.fetchall()
 
         new_timeseries = []
