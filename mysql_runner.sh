@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+cd /home/uwcc-admin/from-old-curw-scehma-to-new-schema/
+
 start_date_time=`date '+%Y-%m-%d 00:00:00' -d "3 days ago"`
 
 echo "activating virtual env..."

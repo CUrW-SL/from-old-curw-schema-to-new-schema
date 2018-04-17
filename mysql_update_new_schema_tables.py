@@ -137,7 +137,7 @@ def update_station_descriptors(additions):
 
         range_start = source_ranges[source_type][0]
         sd_id_df = pd.read_sql_query(sql=(sql % range_start), con=new_curw_db_conn)
-        possible_sd_id = (int(sd_id_df['source'][0]) + 1) if not sd_id_df.empty else range_start
+        possible_sd_id = (int(sd_id_df['sd_id'][0]) + 1) if not sd_id_df.empty else range_start
         possible_sd_id = possible_sd_id + source_encounters[source_type]
 
         additions.set_value(index, 'sd_id', possible_sd_id)
